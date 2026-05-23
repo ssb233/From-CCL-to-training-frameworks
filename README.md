@@ -65,3 +65,17 @@ Desktop/
 2. Start with [collective communication](docs/01-collective-communication/README.md).
 3. Record source versions in [versions.md](docs/references/versions.md) whenever we
    read framework code.
+
+## Guided Learning Command
+
+For Claude Code style guided sessions, use:
+
+```text
+/dist-train-study <topic or question>
+```
+
+The command definition is stored in
+[.claude/commands/dist-train-study.md](.claude/commands/dist-train-study.md).
+
+The long-term progress tracker is
+[progress/distributed-training-study-tracker.md](progress/distributed-training-study-tracker.md).

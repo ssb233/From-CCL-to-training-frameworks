@@ -12,3 +12,7 @@ Start with the roadmap, then move chapter by chapter:
 6. [DeepSpeed](05-deepspeed/README.md)
 7. [End-to-End Training Loop](06-end-to-end-training-loop/README.md)
 
+Learning process files live at the repository root:
+
+- `progress/distributed-training-study-tracker.md`
+- `sessions/SESSION-TEMPLATE.md`

@@ -6,6 +6,10 @@ nav:
   - Collective Communication:
       - Overview: 01-collective-communication/README.md
       - Basic Collectives: 01-collective-communication/01-basic-collectives.md
+      - Communication Cost Model: 01-collective-communication/02-communication-cost-model.md
+      - Ring All-Reduce: 01-collective-communication/03-ring-all-reduce.md
+      - Mapping to Training: 01-collective-communication/04-training-mapping.md
+      - Learning Checklist: 01-collective-communication/learning-checklist.md
   - PyTorch Distributed: 02-pytorch-distributed/README.md
   - NCCL: 03-nccl/README.md
   - Megatron-LM: 04-megatron/README.md

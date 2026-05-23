@@ -39,9 +39,28 @@ This gives us the first map:
 ## Learning Order
 
 1. [Basic collectives](01-basic-collectives.md)
-2. Communication cost model
-3. Ring all-reduce
+2. [Communication cost model](02-communication-cost-model.md)
+3. [Ring all-reduce](03-ring-all-reduce.md)
 4. Tree and hierarchical collectives
 5. Mapping collectives to distributed training
 6. Minimal PyTorch examples
 
+## First Reading Questions
+
+Before touching NCCL or PyTorch source code, we want to answer these questions:
+
+- If every rank has a gradient tensor, why does DDP need `all_reduce`?
+- Why is `all_reduce` often implemented as `reduce_scatter` plus `all_gather`?
+- Why does communication time depend on both latency and bandwidth?
+- Why does topology matter even when the API call is the same?
+- Why can two correct collective algorithms have very different performance?
+
+## Chapter Outputs
+
+By the end of this chapter, we should have:
+
+- A vocabulary for reading distributed training code.
+- A table mapping training behavior to collective primitives.
+- A cost model for reasoning about performance.
+- A worked explanation of ring all-reduce.
+- Minimal PyTorch examples for each important primitive.

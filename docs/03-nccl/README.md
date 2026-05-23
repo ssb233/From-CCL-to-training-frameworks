@@ -11,5 +11,4 @@ Initial questions:
 - How do topology and environment variables affect performance?
 
 Source reading targets will be added after we pin an NCCL version in
-[versions.md](../../references/versions.md).
-
+[versions.md](../references/versions.md).

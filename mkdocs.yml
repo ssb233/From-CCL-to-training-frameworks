@@ -11,5 +11,8 @@ nav:
   - Megatron-LM: 04-megatron/README.md
   - DeepSpeed: 05-deepspeed/README.md
   - End-to-End Training Loop: 06-end-to-end-training-loop/README.md
+  - References:
+      - Source Versions: references/versions.md
+      - Source Layout: references/source-layout.md
   - Glossary: glossary.md
   - Study Log: study-log.md

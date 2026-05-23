@@ -13,5 +13,4 @@ Initial questions:
 - How does DeepSpeed integrate with Megatron-style model parallelism?
 
 Source reading targets will be added after we pin a DeepSpeed version in
-[versions.md](../../references/versions.md).
-
+[versions.md](../references/versions.md).

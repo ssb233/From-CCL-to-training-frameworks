@@ -37,9 +37,9 @@ docs/
   04-megatron/
   05-deepspeed/
   06-end-to-end-training-loop/
-references/
-  versions.md
-  source-layout.md
+  references/
+    versions.md
+    source-layout.md
 code-snippets/
 diagrams/
 ```
@@ -63,5 +63,5 @@ Desktop/
 
 1. Read [the roadmap](docs/00-roadmap.md).
 2. Start with [collective communication](docs/01-collective-communication/README.md).
-3. Record source versions in [versions.md](references/versions.md) whenever we
+3. Record source versions in [versions.md](docs/references/versions.md) whenever we
    read framework code.

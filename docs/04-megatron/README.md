@@ -13,5 +13,4 @@ Initial questions:
 - How does the distributed optimizer reduce memory?
 
 Source reading targets will be added after we pin a Megatron-LM commit in
-[versions.md](../../references/versions.md).
-
+[versions.md](../references/versions.md).

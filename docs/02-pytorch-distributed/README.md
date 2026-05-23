@@ -12,5 +12,4 @@ Initial questions:
 - How does FSDP use sharding-oriented collectives?
 
 Source reading targets will be added after we pin a PyTorch version in
-[versions.md](../../references/versions.md).
-
+[versions.md](../references/versions.md).

@@ -1,14 +1,13 @@
 # NCCL
 
-This chapter studies NCCL as the GPU collective communication backend.
+本章研究 NCCL 作为 GPU 集合通信后端的工作方式。
 
-Initial questions:
+初始问题：
 
-- What is an NCCL communicator?
-- How does NCCL choose rings, trees, channels, and protocols?
-- What happens inside `ncclAllReduce`?
-- How do CUDA streams interact with communication?
-- How do topology and environment variables affect performance?
+- NCCL communicator 是什么？
+- NCCL 如何选择 ring、tree、channel 和 protocol？
+- `ncclAllReduce` 内部发生了什么？
+- CUDA stream 如何与通信交互？
+- topology 和环境变量如何影响性能？
 
-Source reading targets will be added after we pin an NCCL version in
-[versions.md](../references/versions.md).
+源码阅读目标会在 [源码版本记录](../references/versions.md) 中固定 NCCL 版本后继续补充。

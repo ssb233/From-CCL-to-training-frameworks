@@ -1,14 +1,12 @@
 # Ring All-Reduce
 
-`all_reduce` is one of the most important collectives in distributed training.
-Data parallel training uses it to synchronize gradients across model replicas.
+`all_reduce` 是分布式训练中最重要的 collective 之一。数据并行训练用它在模型副本之间同步梯度。
 
-Ring all-reduce is a classic algorithm for implementing all-reduce efficiently
-for large tensors.
+Ring all-reduce 是一种经典算法，常用于高效实现大 tensor 的 all-reduce。
 
-## Problem
+## 问题
 
-Assume four ranks. Each rank has a local tensor:
+假设有 4 个 rank，每个 rank 有一个本地 tensor：
 
 ```text
 rank 0: A
@@ -17,134 +15,126 @@ rank 2: C
 rank 3: D
 ```
 
-After `all_reduce(sum)`, every rank should have:
+执行 `all_reduce(sum)` 后，每个 rank 都应该得到：
 
 ```text
 A + B + C + D
 ```
 
-A naive algorithm could send everything to rank 0, reduce there, then broadcast
-the result. That is correct, but rank 0 becomes a bottleneck.
+一种朴素算法是：所有 rank 把数据发给 rank 0，在 rank 0 上 reduce，再把结果 broadcast 回去。这个算法是正确的，但 rank 0 会成为瓶颈。
 
-Ring all-reduce avoids this central bottleneck.
+Ring all-reduce 的目标就是避免这个中心瓶颈。
 
-## Ring Structure
+## Ring 结构
 
-Ranks are arranged in a logical ring:
+把 rank 组织成一个逻辑环：
 
 ```text
 rank 0 -> rank 1 -> rank 2 -> rank 3 -> rank 0
 ```
 
-Each rank sends to its next neighbor and receives from its previous neighbor.
+每个 rank 向下一个邻居发送数据，并从上一个邻居接收数据。
 
-The tensor is split into `world_size` chunks. With four ranks:
+tensor 会被切成 `world_size` 个 chunk。4 个 rank 时：
 
 ```text
 tensor = [chunk 0, chunk 1, chunk 2, chunk 3]
 ```
 
-## Two Phases
+## 两个阶段
 
-Ring all-reduce is commonly understood as two phases:
+Ring all-reduce 通常可以理解成两个阶段：
 
 1. Reduce-scatter
 2. All-gather
 
-This is a crucial connection. `all_reduce` can be decomposed into:
+这是一个非常关键的连接：
 
 ```text
 all_reduce = reduce_scatter + all_gather
 ```
 
-## Phase 1: Reduce-Scatter
+## 阶段 1：Reduce-Scatter
 
-During reduce-scatter, chunks circulate around the ring. Each rank adds received
-chunks to its local chunks.
+在 reduce-scatter 阶段，chunk 会沿着 ring 流动。每个 rank 把收到的 chunk 加到自己的本地 chunk 上。
 
-After enough steps, every rank owns one fully reduced chunk.
+经过足够多步后，每个 rank 会拥有一个已经完全 reduce 好的 chunk。
 
-For four ranks, the result after reduce-scatter is conceptually:
-
-```text
-rank 0 owns reduced chunk 0
-rank 1 owns reduced chunk 1
-rank 2 owns reduced chunk 2
-rank 3 owns reduced chunk 3
-```
-
-Each reduced chunk already contains contributions from all ranks, but no rank
-has the full tensor yet.
-
-## Phase 2: All-Gather
-
-During all-gather, the reduced chunks circulate again.
-
-After enough steps, every rank receives every reduced chunk:
+对于 4 个 rank，reduce-scatter 结束后概念上是：
 
 ```text
-rank 0 owns [reduced chunk 0, reduced chunk 1, reduced chunk 2, reduced chunk 3]
-rank 1 owns [reduced chunk 0, reduced chunk 1, reduced chunk 2, reduced chunk 3]
-rank 2 owns [reduced chunk 0, reduced chunk 1, reduced chunk 2, reduced chunk 3]
-rank 3 owns [reduced chunk 0, reduced chunk 1, reduced chunk 2, reduced chunk 3]
+rank 0 拥有 reduced chunk 0
+rank 1 拥有 reduced chunk 1
+rank 2 拥有 reduced chunk 2
+rank 3 拥有 reduced chunk 3
 ```
 
-Now each rank has the full all-reduce result.
+每个 reduced chunk 已经包含所有 rank 的贡献，但还没有任何一个 rank 拥有完整 tensor。
 
-## Why Ring Helps
+## 阶段 2：All-Gather
 
-Ring all-reduce has no central coordinator. Every rank sends and receives in each
-step.
+在 all-gather 阶段，reduced chunk 再次沿着 ring 流动。
 
-For large tensors, this is attractive because:
+经过足够多步后，每个 rank 都拿到所有 reduced chunk：
 
-- Work is balanced across ranks.
-- Each rank communicates with neighbors instead of funneling through one rank.
-- Bandwidth can be used continuously.
-- Memory can be handled chunk by chunk.
+```text
+rank 0 拥有 [reduced chunk 0, reduced chunk 1, reduced chunk 2, reduced chunk 3]
+rank 1 拥有 [reduced chunk 0, reduced chunk 1, reduced chunk 2, reduced chunk 3]
+rank 2 拥有 [reduced chunk 0, reduced chunk 1, reduced chunk 2, reduced chunk 3]
+rank 3 拥有 [reduced chunk 0, reduced chunk 1, reduced chunk 2, reduced chunk 3]
+```
 
-## Cost Intuition
+此时每个 rank 都得到了完整 all-reduce 结果。
 
-With `p` ranks and `n` bytes per tensor, each rank sends and receives roughly:
+## 为什么 Ring 有用
+
+Ring all-reduce 没有中心协调者。每个 rank 在每一步都发送和接收。
+
+对于大 tensor，这很有吸引力：
+
+- 各 rank 工作量更均衡。
+- 不会把所有数据 funnel 到一个 rank。
+- bandwidth 可以被持续利用。
+- 可以按 chunk 处理内存。
+
+## 代价直觉
+
+有 `p` 个 rank，每个 tensor 有 `n` 字节时，每个 rank 大约发送和接收：
 
 ```text
 2 * (p - 1) / p * n bytes
 ```
 
-Why `2`?
+为什么有 `2`？
 
-- One pass for reduce-scatter.
-- One pass for all-gather.
+- 一轮 reduce-scatter。
+- 一轮 all-gather。
 
-Why `(p - 1) / p`?
+为什么有 `(p - 1) / p`？
 
-- Each rank does not need to send its own final chunk to itself.
+- 每个 rank 不需要把自己的最终 chunk 发给自己。
 
-This is not the full real-world performance model, but it explains why ring
-all-reduce is bandwidth efficient for large tensors.
+这不是完整真实世界性能模型，但它解释了为什么 ring all-reduce 对大 tensor 具有较好的带宽效率。
 
-## Relationship to Training Frameworks
+## 与训练框架的关系
 
-| Context | Why ring all-reduce matters |
+| 场景 | 为什么 ring all-reduce 重要 |
 | --- | --- |
-| PyTorch DDP | Gradients are commonly synchronized with all-reduce. |
-| NCCL | NCCL may use ring-style algorithms depending on tensor size and topology. |
-| Megatron-LM | Tensor-parallel layers often need collective communication inside model computation. |
-| DeepSpeed | ZeRO and sharded optimizers make reduce-scatter/all-gather first-class operations. |
+| PyTorch DDP | 梯度通常通过 all-reduce 同步。 |
+| NCCL | NCCL 可能根据 tensor 大小和 topology 选择 ring 风格算法。 |
+| Megatron-LM | 张量并行 layer 常在模型计算内部使用 collective。 |
+| DeepSpeed | ZeRO 和 sharded optimizer 让 reduce-scatter/all-gather 成为核心操作。 |
 
-## Important Subtlety
+## 一个重要细节
 
-The API may say `all_reduce`, but the implementation may internally behave like
-reduce-scatter plus all-gather.
+API 可能叫 `all_reduce`，但实现内部可能表现为 reduce-scatter 加 all-gather。
 
-This matters because once we understand `reduce_scatter` and `all_gather`, ZeRO
-and FSDP become much easier to reason about.
+这很重要，因为理解 `reduce_scatter` 和 `all_gather` 之后，ZeRO 与 FSDP 会更容易理解。
 
-## What to Remember
+## 应该记住什么
 
-- `all_reduce` gives every rank the same reduced tensor.
-- Ring all-reduce avoids a single bottleneck rank.
-- The algorithm splits tensors into chunks.
-- It has two conceptual phases: reduce-scatter and all-gather.
-- This decomposition shows up again in memory-efficient training frameworks.
-
+- `all_reduce` 会让每个 rank 得到相同的 reduce 后 tensor。
+- Ring all-reduce 避免单个瓶颈 rank。
+- 算法会把 tensor 切成 chunk。
+- 它可以分解为两个概念阶段：reduce-scatter 和 all-gather。
+- 这种分解会在显存高效训练框架中反复出现。

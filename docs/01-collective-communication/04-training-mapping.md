@@ -1,116 +1,112 @@
-# Mapping Collectives to Training
+# 集合通信到训练的映射
 
-Collectives are not abstract math exercises. Each one appears because a training
-strategy creates a specific data movement problem.
+Collective 不是抽象数学题。每个 collective 出现，都是因为某种训练策略制造了特定的数据移动问题。
 
-## Data Parallel Training
+## 数据并行训练
 
-In data parallelism:
+在数据并行中：
 
-- Every rank has a full model replica.
-- Every rank processes different input data.
-- Every rank computes local gradients.
-- Model replicas must stay numerically synchronized.
+- 每个 rank 有完整模型副本。
+- 每个 rank 处理不同输入数据。
+- 每个 rank 计算本地梯度。
+- 模型副本必须保持数值同步。
 
-The core collective is:
+核心 collective 是：
 
 ```text
 all_reduce(local_gradients)
 ```
 
-After all-reduce and averaging, every rank applies the same optimizer update.
+all-reduce 并平均后，每个 rank 执行相同的 optimizer update。
 
-## Tensor Parallel Training
+## 张量并行训练
 
-In tensor parallelism:
+在张量并行中：
 
-- A layer is split across ranks.
-- Each rank computes part of the layer output or gradient.
-- Some layer boundaries require combining partial results.
+- 一个 layer 被拆到多个 rank 上。
+- 每个 rank 计算该 layer 输出或梯度的一部分。
+- 某些 layer 边界需要合并 partial result。
 
-Common collectives:
+常见 collective：
 
 - `all_reduce`
 - `all_gather`
 - `reduce_scatter`
 
-Example intuition:
+直觉示例：
 
-- If ranks compute partial sums, use `all_reduce`.
-- If ranks own shards that must be materialized together, use `all_gather`.
-- If ranks compute a full result but should keep only shards, use
-  `reduce_scatter`.
+- 如果各 rank 计算的是 partial sum，需要 `all_reduce`。
+- 如果各 rank 持有 shard，但后续需要完整 tensor，需要 `all_gather`。
+- 如果各 rank 算出了完整结果，但最终只应该保留 shard，需要 `reduce_scatter`。
 
-## Pipeline Parallel Training
+## 流水线并行训练
 
-In pipeline parallelism:
+在流水线并行中：
 
-- Different ranks own different layers.
-- Activations move forward between stages.
-- Gradients move backward between stages.
+- 不同 rank 持有不同 layer 或 block。
+- activation 沿 forward 方向在 stage 间移动。
+- gradient 沿 backward 方向在 stage 间移动。
 
-This often uses point-to-point communication rather than only collectives.
+这类通信经常使用点对点通信，而不只是 collective。
 
-Important idea:
+重要结论：
 
 ```text
-not every distributed training communication is a collective
+并不是所有分布式训练通信都是 collective
 ```
 
-Pipeline parallelism forces us to study send/recv later.
+流水线并行会迫使我们后面研究 send/recv。
 
-## ZeRO and Sharded Training
+## ZeRO 与 Sharded Training
 
-In ZeRO-style training:
+在 ZeRO 风格训练中：
 
-- Optimizer states may be partitioned.
-- Gradients may be partitioned.
-- Parameters may be partitioned.
+- optimizer state 可能被切分。
+- gradient 可能被切分。
+- parameter 可能被切分。
 
-Common collectives:
+常见 collective：
 
-- `reduce_scatter` to reduce gradients and keep only shards.
-- `all_gather` to materialize parameters when needed.
+- `reduce_scatter`：reduce 梯度并只保留本 rank shard。
+- `all_gather`：在需要时临时 materialize 参数。
 
-The tradeoff:
+核心 tradeoff：
 
 ```text
-less memory replication, more structured communication
+更少的显存复制，换来更结构化的通信
 ```
 
 ## Mixture-of-Experts
 
-In expert parallelism:
+在 expert parallelism 中：
 
-- Tokens are routed to different expert ranks.
-- Each rank may send different token subsets to other ranks.
+- token 被路由到不同 expert rank。
+- 每个 rank 可能向其他 rank 发送不同 token 子集。
 
-The common collective is:
+常见 collective 是：
 
 ```text
 all_to_all
 ```
 
-This communication pattern is harder to balance because token routing may be
-uneven.
+这种通信模式更难负载均衡，因为 token routing 可能不均匀。
 
-## Summary Table
+## 总结表
 
-| Training pattern | Data movement problem | Common communication |
+| 训练模式 | 数据移动问题 | 常见通信 |
 | --- | --- | --- |
-| DDP | Average gradients across replicas | `all_reduce` |
-| FSDP / ZeRO | Reduce and shard gradients | `reduce_scatter` |
-| FSDP / ZeRO | Materialize sharded parameters | `all_gather` |
-| Tensor parallel linear layer | Combine partial results | `all_reduce` or `all_gather` |
-| Pipeline parallelism | Move activations and gradients between stages | send/recv |
-| Expert parallelism | Route tokens to experts | `all_to_all` |
+| DDP | 跨模型副本平均梯度 | `all_reduce` |
+| FSDP / ZeRO | reduce 并切分梯度 | `reduce_scatter` |
+| FSDP / ZeRO | materialize sharded parameter | `all_gather` |
+| Tensor parallel linear layer | 合并 partial result | `all_reduce` 或 `all_gather` |
+| Pipeline parallelism | 在 stage 间移动 activation 和 gradient | send/recv |
+| Expert parallelism | 把 token 路由给 expert | `all_to_all` |
 
-## Reading Direction
+## 源码阅读时的提问方式
 
-When we read framework source code, we should always ask:
+读框架源码时，始终问：
 
-1. What tensor exists on this rank right now?
-2. Which ranks need this tensor next?
-3. Should values be copied, reduced, scattered, or exchanged?
-4. Is the communication on the critical path, or can it overlap with compute?
-
+1. 当前 rank 上有什么 tensor？
+2. 接下来哪些 rank 需要这个 tensor？
+3. 这个值应该被复制、reduce、scatter，还是 exchange？
+4. 这个通信在 critical path 上吗？能否和 compute overlap？

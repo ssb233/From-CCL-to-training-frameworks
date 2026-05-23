@@ -1,138 +1,133 @@
-# Roadmap
+# 学习路线图
 
-This roadmap follows the execution path of distributed training instead of the
-marketing boundary of each framework.
+这条路线不是按照框架名字来切分，而是按照分布式训练真正的执行链路来组织。
 
-## Phase 1: Collective Communication
+## 阶段 1：集合通信
 
-Goal: understand the communication operations that every later framework builds
-on.
+目标：理解后续所有训练框架都会依赖的通信原语。
 
-Topics:
+主题：
 
-- Rank, world size, process group, backend
-- Point-to-point vs collective communication
-- `broadcast`, `reduce`, `all_reduce`, `all_gather`, `reduce_scatter`,
-  `scatter`, `gather`, `all_to_all`, `barrier`
-- Latency, bandwidth, topology, synchronization
-- Ring, tree, hierarchical, and topology-aware algorithms
-- Why gradient synchronization often maps to `all_reduce`
-- Why tensor parallelism often uses `all_reduce`, `all_gather`, and
-  `reduce_scatter`
+- rank、world size、process group、backend
+- 点对点通信与集合通信的区别
+- `broadcast`、`reduce`、`all_reduce`、`all_gather`、`reduce_scatter`、`scatter`、`gather`、`all_to_all`、`barrier`
+- latency、bandwidth、topology、synchronization
+- ring、tree、hierarchical、topology-aware 算法
+- 为什么梯度同步经常对应 `all_reduce`
+- 为什么张量并行经常使用 `all_reduce`、`all_gather` 和 `reduce_scatter`
 
-Output:
+产出：
 
-- Primitive-by-primitive notes
-- Small PyTorch distributed examples
-- Communication pattern diagrams
+- 每个通信原语的笔记
+- 小型 PyTorch distributed 实验
+- 通信模式图
 
-## Phase 2: PyTorch Distributed
+## 阶段 2：PyTorch Distributed
 
-Goal: connect the API we write to the backend behavior that actually runs.
+目标：把我们写的 PyTorch API 和底层运行时行为连起来。
 
-Topics:
+主题：
 
 - `torch.distributed.init_process_group`
-- Stores, rendezvous, rank assignment, launchers
-- Process groups and subgroups
+- store、rendezvous、rank 分配、launcher
+- process group 和 subgroup
 - `ProcessGroupNCCL`
-- DDP gradient buckets and overlap
-- FSDP and reduce-scatter/all-gather style sharding
+- DDP gradient bucket 和通信计算重叠
+- FSDP 与 `reduce_scatter` / `all_gather` 风格的 sharding
 
-Output:
+产出：
 
-- Minimal runnable examples
-- API-to-source call chains
-- DDP/FSDP communication comparison
+- 最小可运行实验
+- API 到源码的调用链
+- DDP 与 FSDP 通信模式对比
 
-## Phase 3: NCCL
+## 阶段 3：NCCL
 
-Goal: understand NCCL as the GPU communication engine.
+目标：理解 NCCL 作为 GPU 通信引擎的工作方式。
 
-Topics:
+主题：
 
-- Communicators, ranks, channels, streams
-- Rings, trees, protocols, and topology
-- `ncclAllReduce`, `ncclBroadcast`, `ncclReduceScatter`, `ncclAllGather`
-- Intra-node NVLink/PCIe and inter-node networking
-- Debugging with `NCCL_DEBUG`, `NCCL_TOPO_DUMP_FILE`, and environment variables
+- communicator、rank、channel、stream
+- ring、tree、protocol、topology
+- `ncclAllReduce`、`ncclBroadcast`、`ncclReduceScatter`、`ncclAllGather`
+- 单机内 NVLink / PCIe 与多机网络通信
+- 使用 `NCCL_DEBUG`、`NCCL_TOPO_DUMP_FILE` 和环境变量调试
 
-Output:
+产出：
 
-- NCCL concept map
-- Source reading notes for selected functions
-- Debugging checklist
+- NCCL 概念图
+- 关键函数源码阅读笔记
+- NCCL 调试清单
 
-## Phase 4: Megatron-LM
+## 阶段 4：Megatron-LM
 
-Goal: understand how parallel training strategies compose.
+目标：理解大模型并行训练策略如何组合。
 
-Topics:
+主题：
 
-- Data parallelism, tensor parallelism, pipeline parallelism
-- Model-parallel process group construction
-- Column-parallel and row-parallel linear layers
-- Sequence parallelism
-- Pipeline schedules and microbatches
-- Distributed optimizer behavior
+- 数据并行、张量并行、流水线并行
+- model-parallel process group 的构建
+- ColumnParallelLinear 与 RowParallelLinear
+- sequence parallelism
+- pipeline schedule 与 microbatch
+- distributed optimizer
 
-Output:
+产出：
 
-- Process group diagrams
-- Layer-level communication notes
-- One training step walkthrough
+- process group 图
+- layer 级通信笔记
+- 一次训练 step 的完整 walkthrough
 
-## Phase 5: DeepSpeed
+## 阶段 5：DeepSpeed
 
-Goal: understand DeepSpeed as a training engine and memory optimizer.
+目标：理解 DeepSpeed 作为训练引擎和显存优化系统的设计。
 
-Topics:
+主题：
 
-- Engine initialization and training loop wrapper
-- ZeRO stages 1, 2, and 3
-- Parameter, gradient, and optimizer-state partitioning
-- Communication hooks and overlap
-- Checkpointing and offload
-- Integration with Megatron-style training
+- engine 初始化和训练循环包装
+- ZeRO stage 1、2、3
+- parameter、gradient、optimizer state 的切分
+- communication hook 与 overlap
+- checkpoint 与 offload
+- 与 Megatron 风格训练的集成
 
-Output:
+产出：
 
-- ZeRO communication/memory tables
-- DeepSpeed engine call chain
-- Comparison with PyTorch DDP/FSDP and Megatron distributed optimizer
+- ZeRO 通信与显存表
+- DeepSpeed engine 调用链
+- 与 PyTorch DDP/FSDP 和 Megatron distributed optimizer 的对比
 
-## Phase 6: End-to-End Training
+## 阶段 6：端到端训练流程
 
-Goal: explain one complete distributed training iteration.
+目标：解释一次完整的分布式训练迭代。
 
-Topics:
+主题：
 
-- Launch
-- Process group initialization
-- Model construction
-- Parallel wrapping
-- Data loading
-- Forward pass
-- Loss computation
-- Backward pass
-- Gradient communication
-- Optimizer step
-- Checkpointing and logging
+- 启动进程
+- 初始化 process group
+- 构建模型
+- 包装并行策略
+- 加载数据
+- forward
+- loss 计算
+- backward
+- 梯度、参数或优化器状态通信
+- optimizer step
+- checkpoint 与 logging
 
-Output:
+产出：
 
-- Full training-step diagram
-- A minimal PyTorch distributed training demo
-- A comparison of PyTorch DDP, Megatron-LM, and DeepSpeed flows
+- 完整 training step 图
+- 最小 PyTorch distributed training demo
+- PyTorch DDP、Megatron-LM、DeepSpeed 流程对比
 
-## Study Method
+## 学习方法
 
-Each topic should be documented with the same pattern:
+每个主题都按同一个结构沉淀：
 
-1. Concept: what problem does it solve?
-2. API: what code does the user write?
-3. Runtime: what happens across ranks?
-4. Source: where is the implementation?
-5. Experiment: how can we verify it?
-6. Summary: what should we remember?
-
+1. 概念：它解决什么问题？
+2. API：用户写什么代码？
+3. 运行时：各个 rank 上发生了什么？
+4. 源码：实现在哪里？
+5. 实验：如何验证？
+6. 总结：应该记住什么？

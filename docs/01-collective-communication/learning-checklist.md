@@ -1,37 +1,36 @@
-# Learning Checklist
+# 学习清单
 
-Use this checklist to track the collective communication chapter.
+用这份清单追踪集合通信章节的学习进度。
 
-## Concepts
+## 概念
 
-- [x] Understand rank, world size, process group, and backend.
-- [x] Distinguish point-to-point communication from collectives.
-- [x] Explain `broadcast`.
-- [x] Explain `reduce`.
-- [x] Explain `all_reduce`.
-- [x] Explain `all_gather`.
-- [x] Explain `reduce_scatter`.
-- [x] Explain `all_to_all`.
-- [x] Explain `barrier`.
-- [x] Explain latency and bandwidth.
-- [x] Explain why bucketing helps DDP.
-- [x] Explain ring all-reduce at a high level.
-- [ ] Explain tree collectives.
-- [ ] Explain hierarchical collectives.
+- [x] 理解 rank、world size、process group 和 backend。
+- [x] 区分点对点通信和集合通信。
+- [x] 解释 `broadcast`。
+- [x] 解释 `reduce`。
+- [x] 解释 `all_reduce`。
+- [x] 解释 `all_gather`。
+- [x] 解释 `reduce_scatter`。
+- [x] 解释 `all_to_all`。
+- [x] 解释 `barrier`。
+- [x] 解释 latency 和 bandwidth。
+- [x] 解释为什么 bucketing 对 DDP 有帮助。
+- [x] 从高层解释 ring all-reduce。
+- [ ] 解释 tree collective。
+- [ ] 解释 hierarchical collective。
 
-## Training Mapping
+## 训练映射
 
-- [x] Map DDP gradient sync to `all_reduce`.
-- [x] Map ZeRO/FSDP gradient sharding to `reduce_scatter`.
-- [x] Map ZeRO/FSDP parameter materialization to `all_gather`.
-- [x] Map expert routing to `all_to_all`.
-- [ ] Map Megatron tensor-parallel linear layers to concrete collectives.
+- [x] 把 DDP 梯度同步映射到 `all_reduce`。
+- [x] 把 ZeRO/FSDP 梯度切分映射到 `reduce_scatter`。
+- [x] 把 ZeRO/FSDP 参数 materialization 映射到 `all_gather`。
+- [x] 把 expert routing 映射到 `all_to_all`。
+- [ ] 把 Megatron tensor-parallel linear layer 映射到具体 collective。
 
-## Experiments
+## 实验
 
-- [ ] Run a local `all_reduce` example.
-- [ ] Run a local `all_gather` example.
-- [ ] Run a local `reduce_scatter` example.
-- [ ] Inspect how tensor values change per rank.
-- [ ] Add diagrams for the core collectives.
-
+- [ ] 运行本地 `all_reduce` 示例。
+- [ ] 运行本地 `all_gather` 示例。
+- [ ] 运行本地 `reduce_scatter` 示例。
+- [ ] 检查每个 rank 上 tensor 值如何变化。
+- [ ] 为核心 collective 补图。

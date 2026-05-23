@@ -1,32 +1,28 @@
-# From CCL to Training Frameworks
+# 从集合通信到训练框架
 
-This repository records a systematic learning path from collective communication
-to distributed deep learning training frameworks.
+这个仓库用于系统性记录从集合通信到分布式深度学习训练框架的学习过程。
 
-The core stack is:
+核心技术栈包括：
 
-- PyTorch as the programming and training foundation
-- `torch.distributed` as the distributed runtime entry point
-- NCCL as the GPU collective communication backend
-- Megatron-LM as the tensor/pipeline/data parallel training reference
-- DeepSpeed as the ZeRO and training engine reference
+- PyTorch：训练代码和分布式 API 的基础
+- `torch.distributed`：PyTorch 分布式运行时入口
+- NCCL：GPU 集合通信后端
+- Megatron-LM：张量并行、流水线并行、数据并行的大模型训练参考实现
+- DeepSpeed：ZeRO、训练引擎和显存优化参考实现
 
-## Learning Goal
+## 学习目标
 
-Build a complete mental model of how distributed training works, from a single
-collective primitive such as `all_reduce` to a full large-model training loop.
+建立一条完整的理解链路：从 `all_reduce` 这样的单个集合通信原语开始，一直理解到一个完整的大模型分布式训练 step。
 
-The notes should answer questions like:
+这个仓库里的笔记应该逐步回答这些问题：
 
-- What problem does each collective communication primitive solve?
-- How does PyTorch route a collective call to NCCL?
-- How do data parallel, tensor parallel, pipeline parallel, and ZeRO change
-  communication patterns?
-- How do Megatron-LM and DeepSpeed organize process groups, gradients,
-  optimizer states, and checkpoints?
-- What happens during one end-to-end training step?
+- 每个集合通信原语解决什么问题？
+- PyTorch 如何把一次 collective 调用路由到 NCCL？
+- 数据并行、张量并行、流水线并行、ZeRO 分别如何改变通信模式？
+- Megatron-LM 和 DeepSpeed 如何组织 process group、梯度、优化器状态和 checkpoint？
+- 一次端到端训练迭代到底发生了什么？
 
-## Repository Layout
+## 仓库结构
 
 ```text
 docs/
@@ -42,13 +38,13 @@ docs/
     source-layout.md
 code-snippets/
 diagrams/
+sessions/
+progress/
 ```
 
-The learning repository should stay clean. Full upstream source repositories are
-better cloned next to this repository or added later as pinned references only
-when source-level reading begins.
+这个仓库应保持为“学习资料仓库”，不默认复制完整上游源码。完整源码更适合 clone 到这个仓库旁边。
 
-Recommended local layout:
+推荐本地布局：
 
 ```text
 Desktop/
@@ -59,23 +55,24 @@ Desktop/
   DeepSpeed/
 ```
 
-## Start Here
+## 从这里开始
 
-1. Read [the roadmap](docs/00-roadmap.md).
-2. Start with [collective communication](docs/01-collective-communication/README.md).
-3. Record source versions in [versions.md](docs/references/versions.md) whenever we
-   read framework code.
+1. 先读 [学习路线图](docs/00-roadmap.md)。
+2. 从 [集合通信](docs/01-collective-communication/README.md) 开始。
+3. 每次阅读源码时，把版本记录到 [源码版本记录](docs/references/versions.md)。
 
-## Guided Learning Command
+## 引导式学习命令
 
-For Claude Code style guided sessions, use:
+如果使用 Claude Code 风格的命令，可以使用：
 
 ```text
-/dist-train-study <topic or question>
+/dist-train-study <主题或问题>
 ```
 
-The command definition is stored in
-[.claude/commands/dist-train-study.md](.claude/commands/dist-train-study.md).
+命令定义位于：
 
-The long-term progress tracker is
-[progress/distributed-training-study-tracker.md](progress/distributed-training-study-tracker.md).
+[.claude/commands/dist-train-study.md](.claude/commands/dist-train-study.md)
+
+长期学习进度记录位于：
+
+[progress/distributed-training-study-tracker.md](progress/distributed-training-study-tracker.md)

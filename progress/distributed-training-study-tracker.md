@@ -1,55 +1,54 @@
-# Distributed Training Study Tracker
+# 分布式训练学习进度追踪
 
-Last updated: 2026-05-23
+最后更新：2026-05-23
 
-This file is the single source of truth for long-term progress.
+这个文件是长期学习进度的唯一事实来源。
 
-## Chapter Progress
+## 章节进度
 
-| Chapter | Status | Notes |
+| 章节 | 状态 | 备注 |
 | --- | --- | --- |
-| 01 Collective Communication | In progress | Basic collectives, cost model, ring all-reduce drafted |
-| 02 PyTorch Distributed | Not started | |
-| 03 NCCL | Not started | |
-| 04 Megatron-LM | Not started | |
-| 05 DeepSpeed | Not started | |
-| 06 End-to-End Training Loop | Not started | |
+| 01 集合通信 | 进行中 | 已起草基本 collective、通信代价模型、ring all-reduce |
+| 02 PyTorch Distributed | 未开始 | |
+| 03 NCCL | 未开始 | |
+| 04 Megatron-LM | 未开始 | |
+| 05 DeepSpeed | 未开始 | |
+| 06 端到端训练流程 | 未开始 | |
 
-## Topics Mastered
+## 已掌握主题
 
-| Topic | Date | Confidence | Evidence |
+| 主题 | 日期 | 信心 | 证据 |
 | --- | --- | --- | --- |
-| Repository learning structure | 2026-05-23 | Medium-High | Repository initialized with roadmap and docs |
+| 学习仓库结构 | 2026-05-23 | 中高 | 已初始化 roadmap、docs、session 和 progress 结构 |
 
-## Active Knowledge Gaps
+## 当前知识缺口
 
-| Gap | Severity | Related chapter | Follow-up |
+| 缺口 | 严重程度 | 关联章节 | 后续动作 |
 | --- | --- | --- | --- |
-| Need hands-on PyTorch collective experiments | Medium | 01 Collective Communication | Create and run `all_reduce_demo.py` |
-| Need source-level path from PyTorch API to NCCL backend | High | 02 PyTorch Distributed | Clone or inspect pinned PyTorch source |
+| 需要动手运行 PyTorch collective 实验 | 中 | 01 集合通信 | 创建并运行 `all_reduce_demo.py` |
+| 需要源码级理解 PyTorch API 到 NCCL backend 的路径 | 高 | 02 PyTorch Distributed | clone 或检查固定版本 PyTorch 源码 |
 
-## Source Reading Status
+## 源码阅读状态
 
-| Project | Status | Version or commit | Notes |
+| 项目 | 状态 | 版本或 commit | 备注 |
 | --- | --- | --- | --- |
-| PyTorch | Not started | | |
-| NCCL | Not started | | |
-| Megatron-LM | Not started | | |
-| DeepSpeed | Not started | | |
+| PyTorch | 未开始 | | |
+| NCCL | 未开始 | | |
+| Megatron-LM | 未开始 | | |
+| DeepSpeed | 未开始 | | |
 
-## Experiment Status
+## 实验状态
 
-| Experiment | Status | Notes |
+| 实验 | 状态 | 备注 |
 | --- | --- | --- |
-| `all_reduce_demo.py` | Not started | First priority |
-| `all_gather_demo.py` | Not started | |
-| `reduce_scatter_demo.py` | Not started | |
-| DDP gradient sync demo | Not started | |
+| `all_reduce_demo.py` | 未开始 | 第一优先级 |
+| `all_gather_demo.py` | 未开始 | |
+| `reduce_scatter_demo.py` | 未开始 | |
+| DDP 梯度同步 demo | 未开始 | |
 
-## Next Recommended Topics
+## 下一步推荐主题
 
-1. Run a local `all_reduce` experiment.
-2. Add diagrams for basic collectives.
-3. Study tree and hierarchical collectives.
-4. Start PyTorch distributed API path: `dist.all_reduce`.
-
+1. 运行本地 `all_reduce` 实验。
+2. 为基本 collective 补图。
+3. 学习 tree 和 hierarchical collective。
+4. 开始 PyTorch distributed API 路径：`dist.all_reduce`。

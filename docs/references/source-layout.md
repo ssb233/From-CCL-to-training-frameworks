@@ -1,10 +1,8 @@
-# Source Layout Strategy
+# 源码目录策略
 
-The learning repository should contain our notes, experiments, diagrams, and
-small code snippets. Full framework repositories should usually live outside the
-learning repository.
+这个学习仓库应该存放我们的笔记、实验、图和小代码片段。完整框架源码通常放在学习仓库外部。
 
-Recommended layout:
+推荐布局：
 
 ```text
 Desktop/
@@ -15,19 +13,18 @@ Desktop/
   DeepSpeed/
 ```
 
-Why:
+原因：
 
-- The learning repository stays small and readable.
-- Source repositories keep their own Git history.
-- We can pin exact commits without copying large codebases.
-- Notes can link to local paths and upstream GitHub URLs.
+- 学习仓库保持小而清晰。
+- 源码仓库保留自己的 Git 历史。
+- 我们可以固定精确 commit，而不复制大仓库。
+- 笔记可以同时链接本地路径和上游 GitHub URL。
 
-When source reading begins, each note should record:
+开始源码阅读时，每篇笔记都应记录：
 
-- Project name
-- Commit hash or release tag
-- File path
-- Function or class name
-- Why the code matters
-- What question the code answers
-
+- 项目名
+- commit hash 或 release tag
+- 文件路径
+- 函数或类名
+- 这段代码为什么重要
+- 它回答了什么问题

@@ -1,73 +1,72 @@
-# Session Notes Template
+# 学习会话记录模板
 
-## Session Overview
+## 会话概览
 
-- Date:
-- Duration:
-- Format:
-- Main topic:
-- Related chapter:
+- 日期：
+- 时长：
+- 形式：
+- 主要主题：
+- 关联章节：
 
-## Learner Question
+## 学习者问题
 
-Record the learner's question or request as precisely as possible.
+尽可能准确记录学习者的问题或请求。
 
-## Initial Understanding
+## 初始理解
 
-What did the learner already know before the explanation?
+学习者在解释前已经知道什么？
 
-## Concepts Covered
+## 覆盖概念
 
-- Concept:
-- Why it matters:
-- Training-framework connection:
+- 概念：
+- 为什么重要：
+- 与训练框架的连接：
 
-## Teaching Approach
+## 教学方式
 
-Record how the concept was explained:
+记录使用了哪种解释方法：
 
-- Rank-by-rank example
-- Table
-- Diagram
-- Source-reading walk-through
-- Experiment
+- rank-by-rank 例子
+- 表格
+- 图
+- 源码 walkthrough
+- 实验
 
-## Comprehension Checks
+## 理解检查
 
-Questions asked:
+提出的问题：
 
 1.
 2.
 
-Learner response:
+学习者回答：
 
 -
 
-## Knowledge Gaps
+## 知识缺口
 
-- Gap:
-- Severity: High / Medium / Low
-- Follow-up plan:
+- 缺口：
+- 严重程度：高 / 中 / 低
+- 后续计划：
 
-## Topics Mastered
+## 已掌握主题
 
-- Topic:
-- Confidence: High / Medium-High / Medium / Low
-- Evidence:
+- 主题：
+- 信心：高 / 中高 / 中 / 低
+- 证据：
 
-## Source Code Inspected
+## 查看过的源码
 
-| Project | Version or commit | File | Symbol | Insight |
+| 项目 | 版本或 commit | 文件 | 符号 | 洞察 |
 | --- | --- | --- | --- | --- |
 | | | | | |
 
-## Experiments Run
+## 运行过的实验
 
-| Experiment | Command | Result | Notes |
+| 实验 | 命令 | 结果 | 备注 |
 | --- | --- | --- | --- |
 | | | | |
 
-## Follow-Up Topics
+## 后续主题
 
-- 
-
+-

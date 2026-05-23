@@ -1,23 +1,22 @@
-# Collective Communication Experiments
+# 集合通信实验
 
-This directory will hold minimal PyTorch distributed experiments.
+这个目录用于存放最小 PyTorch distributed 实验。
 
-Planned scripts:
+计划脚本：
 
 - `all_reduce_demo.py`
 - `all_gather_demo.py`
 - `reduce_scatter_demo.py`
 - `broadcast_demo.py`
 
-Expected launch shape:
+预期启动方式：
 
 ```powershell
 torchrun --nproc_per_node=4 code-snippets/collective-communication/all_reduce_demo.py
 ```
 
-The experiments should stay small and answer one question each:
+每个实验都只回答一个小问题：
 
-- What tensor does each rank start with?
-- What collective is called?
-- What tensor does each rank end with?
-
+- 每个 rank 开始时有什么 tensor？
+- 调用了哪个 collective？
+- 每个 rank 结束时有什么 tensor？

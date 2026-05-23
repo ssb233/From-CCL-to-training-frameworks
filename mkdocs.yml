@@ -1,22 +1,22 @@
-site_name: From CCL to Training Frameworks
+site_name: 从集合通信到训练框架
 docs_dir: docs
 nav:
-  - Home: index.md
-  - Roadmap: 00-roadmap.md
-  - Collective Communication:
-      - Overview: 01-collective-communication/README.md
-      - Basic Collectives: 01-collective-communication/01-basic-collectives.md
-      - Communication Cost Model: 01-collective-communication/02-communication-cost-model.md
+  - 首页: index.md
+  - 学习路线图: 00-roadmap.md
+  - 集合通信:
+      - 概览: 01-collective-communication/README.md
+      - 基本 Collective: 01-collective-communication/01-basic-collectives.md
+      - 通信代价模型: 01-collective-communication/02-communication-cost-model.md
       - Ring All-Reduce: 01-collective-communication/03-ring-all-reduce.md
-      - Mapping to Training: 01-collective-communication/04-training-mapping.md
-      - Learning Checklist: 01-collective-communication/learning-checklist.md
+      - 训练映射: 01-collective-communication/04-training-mapping.md
+      - 学习清单: 01-collective-communication/learning-checklist.md
   - PyTorch Distributed: 02-pytorch-distributed/README.md
   - NCCL: 03-nccl/README.md
   - Megatron-LM: 04-megatron/README.md
   - DeepSpeed: 05-deepspeed/README.md
-  - End-to-End Training Loop: 06-end-to-end-training-loop/README.md
-  - References:
-      - Source Versions: references/versions.md
-      - Source Layout: references/source-layout.md
-  - Glossary: glossary.md
-  - Study Log: study-log.md
+  - 端到端训练流程: 06-end-to-end-training-loop/README.md
+  - 参考:
+      - 源码版本记录: references/versions.md
+      - 源码目录策略: references/source-layout.md
+  - 术语表: glossary.md
+  - 学习日志: study-log.md

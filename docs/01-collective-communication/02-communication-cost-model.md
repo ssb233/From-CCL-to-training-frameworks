@@ -1,170 +1,156 @@
-# Communication Cost Model
+# 通信代价模型
 
-Collective communication is not only about correctness. The same mathematical
-operation can be correct but slow if it moves data in the wrong pattern.
+集合通信不只是“算得对”。同一个数学操作，即使结果正确，如果数据移动模式不好，也可能非常慢。
 
-This note builds the first performance model we need before reading NCCL,
-PyTorch DDP, Megatron-LM, or DeepSpeed.
+这篇笔记建立阅读 NCCL、PyTorch DDP、Megatron-LM 和 DeepSpeed 之前需要的第一个性能模型。
 
-## The Two Basic Costs
+## 两类基本成本
 
-A simple communication model separates time into two parts:
+一个简单通信模型会把时间拆成两部分：
 
 ```text
 communication_time ~= latency_cost + bandwidth_cost
 ```
 
-Latency is the startup cost of sending a message. Bandwidth is the cost of
-moving the bytes.
+Latency 是发送消息的启动成本。Bandwidth 是搬运字节的成本。
 
-A common form is:
+常见形式是：
 
 ```text
 time ~= alpha + n / beta
 ```
 
-Where:
+其中：
 
-- `alpha` is latency.
-- `n` is the number of bytes.
-- `beta` is bandwidth in bytes per second.
+- `alpha` 是 latency。
+- `n` 是字节数。
+- `beta` 是 bandwidth，单位通常是 bytes/s。
 
-This model is simple, but it is already enough to explain many distributed
-training behaviors.
+这个模型很简单，但已经足以解释很多分布式训练行为。
 
-## Small Messages vs Large Messages
+## 小消息与大消息
 
-For small tensors, latency dominates.
+对于小 tensor，latency 占主导：
 
 ```text
 small n:
 time ~= alpha
 ```
 
-For large tensors, bandwidth dominates.
+对于大 tensor，bandwidth 占主导：
 
 ```text
 large n:
 time ~= n / beta
 ```
 
-This is why frameworks often combine many small gradients into larger buckets.
-One large all-reduce is usually better than thousands of tiny all-reduces.
+这就是框架经常把很多小梯度合并成较大 bucket 的原因。一次较大的 all-reduce 通常比几千次很小的 all-reduce 更高效。
 
-## Number of Ranks Matters
+## Rank 数量的影响
 
-Adding ranks can reduce compute per rank, but it often increases communication
-coordination.
+增加 rank 可以减少每个 rank 的计算量，但通常也会增加通信协调成本。
 
-More ranks can mean:
+更多 rank 可能意味着：
 
-- More participants that must enter a collective.
-- More network links involved.
-- More chances for one slow rank to delay everyone.
-- More complex topology choices.
+- 更多参与 collective 的进程。
+- 更多网络链路被使用。
+- 一个慢 rank 更容易拖住所有人。
+- 更复杂的 topology 选择。
 
-This is the first reason distributed training does not scale perfectly.
+这是分布式训练无法完美线性扩展的第一个原因。
 
-## Topology Matters
+## Topology 很重要
 
-The API call hides topology:
+API 会隐藏 topology：
 
 ```python
 dist.all_reduce(tensor)
 ```
 
-But the runtime has to choose a real path through hardware.
+但运行时必须在真实硬件上选择数据路径。
 
-Within one node, common links include:
+单机内常见链路：
 
 - NVLink
 - PCIe
-- GPU-to-CPU memory paths
+- GPU 到 CPU 内存路径
 
-Across nodes, common links include:
+多机间常见链路：
 
 - InfiniBand
 - Ethernet
 - RoCE
 
-The same `all_reduce` can have very different performance depending on whether
-data moves over NVLink, PCIe, or inter-node network links.
+同一个 `all_reduce`，如果数据走 NVLink、PCIe 或跨节点网络，性能可能完全不同。
 
-## Synchronization Cost
+## 同步成本
 
-A collective is called by every rank in the process group.
+Collective 需要 process group 中每个 rank 都调用。
 
-If one rank arrives late, other ranks may wait.
+如果一个 rank 到得晚，其他 rank 可能等待。
 
-Common causes:
+常见原因：
 
-- Load imbalance in data loading.
-- Uneven compute time.
-- Straggler GPU or node.
-- Different tensor shapes or conditional execution bugs.
-- Network congestion.
+- 数据加载不均衡。
+- 计算时间不均衡。
+- 某个 GPU 或节点变慢。
+- tensor shape 不一致或条件执行 bug。
+- 网络拥塞。
 
-This is why communication performance is also a systems problem, not only an
-algorithm problem.
+所以通信性能也是系统问题，不只是算法问题。
 
 ## Bucketing
 
-Distributed training frameworks often group tensors into buckets before
-communication.
+分布式训练框架经常在通信前把 tensor 组织成 bucket。
 
-Why:
+原因：
 
-- Fewer collective calls reduce latency overhead.
-- Larger messages use bandwidth more efficiently.
-- Buckets can overlap communication with backward computation.
+- 更少的 collective 调用可以降低 latency 开销。
+- 更大的消息能更好利用 bandwidth。
+- bucket 可以和 backward 计算重叠。
 
-In PyTorch DDP, gradients are organized into buckets. As backward computation
-produces gradients, DDP can launch all-reduce for ready buckets before the whole
-backward pass finishes.
+在 PyTorch DDP 中，梯度会被组织进 bucket。随着 backward 产生梯度，DDP 可以在某些 bucket ready 后立即发起 all-reduce，而不必等整个 backward 完成。
 
-The important idea:
+重要思想：
 
 ```text
-communication does not have to wait until all computation is finished
+通信不一定要等所有计算结束后才开始
 ```
 
-Good frameworks try to overlap communication and computation.
+优秀的训练框架会尽量让通信与计算重叠。
 
-## A First Scaling Intuition
+## 第一个扩展性直觉
 
-Suppose each rank computes gradients for the same model replica.
+假设每个 rank 都为同一个模型副本计算梯度。
 
-More ranks:
+增加 rank 会带来：
 
-- Reduce data processed per rank if global batch size is fixed.
-- Increase total batch size if per-rank batch size is fixed.
-- Require gradient synchronization across more ranks.
+- 如果 global batch size 固定，每个 rank 处理的数据变少。
+- 如果 per-rank batch size 固定，总 batch size 变大。
+- 梯度同步需要跨更多 rank 完成。
 
-The training step time becomes roughly:
+训练 step 时间可以粗略理解为：
 
 ```text
 step_time ~= compute_time + exposed_communication_time
 ```
 
-The word `exposed` matters. Some communication can be hidden behind backward
-computation. Some cannot.
+这里的 `exposed` 很关键。有些通信可以藏在 backward 计算后面，有些不能。
 
-## What This Means for Frameworks
+## 对框架阅读的意义
 
-| Framework area | Cost-model question |
+| 框架区域 | 代价模型要问的问题 |
 | --- | --- |
-| PyTorch DDP | How are gradient buckets formed and reduced? |
-| NCCL | Which algorithm and topology path does the backend choose? |
-| Megatron-LM | Which layer operations force communication inside forward/backward? |
-| DeepSpeed ZeRO | Which tensors are partitioned to reduce memory, and what communication replaces replication? |
+| PyTorch DDP | gradient bucket 如何形成并 reduce？ |
+| NCCL | 后端选择了什么算法和 topology 路径？ |
+| Megatron-LM | 哪些 layer 操作会在 forward/backward 中强制通信？ |
+| DeepSpeed ZeRO | 哪些 tensor 被 partition，复制减少后由什么通信补回来？ |
 
-## Key Takeaways
+## 关键结论
 
-- Collective communication has both latency and bandwidth costs.
-- Small messages are latency-sensitive.
-- Large messages are bandwidth-sensitive.
-- Bucketing improves efficiency and enables overlap.
-- Topology changes the real cost behind the same API.
-- Distributed training performance depends on how much communication remains
-  exposed after overlap.
-
+- 集合通信同时有 latency 和 bandwidth 成本。
+- 小消息对 latency 敏感。
+- 大消息对 bandwidth 敏感。
+- bucketing 可以提升效率并支持 overlap。
+- topology 会改变同一个 API 背后的真实成本。
+- 分布式训练性能取决于有多少通信无法被计算隐藏。

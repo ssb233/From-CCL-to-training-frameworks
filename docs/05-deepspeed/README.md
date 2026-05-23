@@ -1,16 +1,14 @@
 # DeepSpeed
 
-This chapter studies DeepSpeed as a training engine and memory optimization
-system.
+本章研究 DeepSpeed 作为训练引擎和显存优化系统的设计。
 
-Initial questions:
+初始问题：
 
-- What does `deepspeed.initialize` construct?
-- How does the DeepSpeed engine wrap the training loop?
-- What changes from ZeRO stage 1 to stage 2 to stage 3?
-- Which tensors are partitioned: optimizer states, gradients, parameters?
-- Where do `reduce_scatter` and `all_gather` appear in ZeRO?
-- How does DeepSpeed integrate with Megatron-style model parallelism?
+- `deepspeed.initialize` 构造了什么？
+- DeepSpeed engine 如何包装训练循环？
+- ZeRO stage 1、2、3 分别改变了什么？
+- 哪些 tensor 被切分：optimizer state、gradient、parameter？
+- ZeRO 中 `reduce_scatter` 和 `all_gather` 出现在哪里？
+- DeepSpeed 如何与 Megatron 风格的 model parallelism 集成？
 
-Source reading targets will be added after we pin a DeepSpeed version in
-[versions.md](../references/versions.md).
+源码阅读目标会在 [源码版本记录](../references/versions.md) 中固定 DeepSpeed 版本后继续补充。

@@ -1,10 +1,9 @@
-# Diagrams
+# 图示
 
-This directory stores diagrams used by the notes.
+这个目录存放笔记中使用的图。
 
-Preferred formats:
+推荐格式：
 
-- Mermaid for simple diagrams embedded in Markdown
-- SVG for editable vector diagrams
-- PNG only when generated from a rendered figure or screenshot
-
+- 简单图优先使用嵌入 Markdown 的 Mermaid。
+- 需要可编辑矢量图时使用 SVG。
+- PNG 只用于渲染后的图片或截图。

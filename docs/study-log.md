@@ -1,12 +1,11 @@
-# Study Log
+# 学习日志
 
-Use this file to record learning sessions.
+这个文件用于记录学习会话。
 
 ## 2026-05-23
 
-- Initialized the learning repository.
-- Created the first roadmap from collective communication to training
-  frameworks.
-- Started the collective communication chapter.
-- Added the first performance model for communication.
-- Added ring all-reduce as the first algorithm-level study topic.
+- 初始化学习仓库。
+- 创建从集合通信到训练框架的第一版路线图。
+- 开始集合通信章节。
+- 添加通信性能的第一个代价模型。
+- 添加 ring all-reduce 作为第一个算法级学习主题。

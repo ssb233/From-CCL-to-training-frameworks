@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+
+# MkDocs
+site/
+
+# Local source clones, if we ever place them inside this repository temporarily.
+third_party/
+external/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
